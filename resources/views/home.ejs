@@ -13,118 +13,23 @@
 <section class="menu container mx-auto py-8">
     <h1 class="font-bold text-lg mb-8">All Pizza's</h1>
     <div class="grid grid-cols-4 gap-x-12 gap-y-16">
+
+        <% for(let pizza of pizzas){%>
         <div class="w-64 mt-2">
             <img class="h-40 mb-4 mx-auto" src="/img/pizza.png" alt="">
             <div class="text-center">
-                <h2 class="mb-4 text-lg">Margrita</h2>
-                <span class="size py-1 px-4 rounded-full upercase text-xs">small</span>
+                <h2 class="mb-4 text-lg"><%= pizza.name%></h2>
+                <span class="size py-1 px-4 rounded-full upercase text-xs"><%= pizza.size%></span>
                 <div class="flex items-center justify-around mt-6">
-                    <span class="font-bold text-lg">&#8377;200</span>
-                    <button class="add-to-cart rounded-full py-1 px-6 flex items-center font-bold ">
+                    <span class="font-bold text-lg">&#8377;<%= pizza.price%></span>
+                    <button data-pizza="<%= JSON.stringify(pizza) %>" class="add-to-cart rounded-full py-1 px-6 flex items-center font-bold ">
                         <span>+</span>
                         <span class="ml-3">Add</span>
                     </button>
                 </div>
             </div>
         </div>
-        <div class="w-64 mt-2">
-            <img class="h-40 mb-4 mx-auto" src="/img/pizza.png" alt="">
-            <div class="text-center">
-                <h2 class="mb-4 text-lg">Margrita</h2>
-                <span class="size py-1 px-4 rounded-full upercase text-xs">small</span>
-                <div class="flex items-center justify-around mt-6">
-                    <span class="font-bold text-lg">&#8377;200</span>
-                    <button class="add-to-cart rounded-full py-1 px-6 flex items-center font-bold ">
-                        <span>+</span>
-                        <span class="ml-3">Add</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="w-64 mt-2">
-            <img class="h-40 mb-4 mx-auto" src="/img/pizza.png" alt="">
-            <div class="text-center">
-                <h2 class="mb-4 text-lg">Margrita</h2>
-                <span class="size py-1 px-4 rounded-full upercase text-xs">small</span>
-                <div class="flex items-center justify-around mt-6">
-                    <span class="font-bold text-lg">&#8377;200</span>
-                    <button class="add-to-cart rounded-full py-1 px-6 flex items-center font-bold ">
-                        <span>+</span>
-                        <span class="ml-3">Add</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="w-64 mt-2">
-            <img class="h-40 mb-4 mx-auto" src="/img/pizza.png" alt="">
-            <div class="text-center">
-                <h2 class="mb-4 text-lg">Margrita</h2>
-                <span class="size py-1 px-4 rounded-full upercase text-xs">small</span>
-                <div class="flex items-center justify-around mt-6">
-                    <span class="font-bold text-lg">&#8377;200</span>
-                    <button class="add-to-cart rounded-full py-1 px-6 flex items-center font-bold ">
-                        <span>+</span>
-                        <span class="ml-3">Add</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="w-64 mt-2">
-            <img class="h-40 mb-4 mx-auto" src="/img/pizza.png" alt="">
-            <div class="text-center">
-                <h2 class="mb-4 text-lg">Margrita</h2>
-                <span class="size py-1 px-4 rounded-full upercase text-xs">small</span>
-                <div class="flex items-center justify-around mt-6">
-                    <span class="font-bold text-lg">&#8377;200</span>
-                    <button class="add-to-cart rounded-full py-1 px-6 flex items-center font-bold ">
-                        <span>+</span>
-                        <span class="ml-3">Add</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="w-64 mt-2">
-            <img class="h-40 mb-4 mx-auto" src="/img/pizza.png" alt="">
-            <div class="text-center">
-                <h2 class="mb-4 text-lg">Margrita</h2>
-                <span class="size py-1 px-4 rounded-full upercase text-xs">small</span>
-                <div class="flex items-center justify-around mt-6">
-                    <span class="font-bold text-lg">&#8377;200</span>
-                    <button class="add-to-cart rounded-full py-1 px-6 flex items-center font-bold ">
-                        <span>+</span>
-                        <span class="ml-3">Add</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="w-64 mt-2">
-            <img class="h-40 mb-4 mx-auto" src="/img/pizza.png" alt="">
-            <div class="text-center">
-                <h2 class="mb-4 text-lg">Margrita</h2>
-                <span class="size py-1 px-4 rounded-full upercase text-xs">small</span>
-                <div class="flex items-center justify-around mt-6">
-                    <span class="font-bold text-lg">&#8377;200</span>
-                    <button class="add-to-cart rounded-full py-1 px-6 flex items-center font-bold ">
-                        <span>+</span>
-                        <span class="ml-3">Add</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="w-64 mt-2">
-            <img class="h-40 mb-4 mx-auto" src="/img/pizza.png" alt="">
-            <div class="text-center">
-                <h2 class="mb-4 text-lg">Margrita</h2>
-                <span class="size py-1 px-4 rounded-full upercase text-xs">small</span>
-                <div class="flex items-center justify-around mt-6">
-                    <span class="font-bold text-lg">&#8377;200</span>
-                    <button class="add-to-cart rounded-full py-1 px-6 flex items-center font-bold ">
-                        <span>+</span>
-                        <span class="ml-3">Add</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+        <%}%>
 
     </div>
 </section>
