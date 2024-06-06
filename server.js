@@ -9,6 +9,8 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const flash = require('express-flash');
 const MongoDBStore = require('connect-mongo');
+const passport = require('passport')
+const local = require('passport-local')
 
 // Middleware to parse JSON bodies with out this you can;t parse the json body
 app.use(express.json());
@@ -43,11 +45,20 @@ app.use(session({
     cookie : {maxAge :1000 * 60 * 60 * 24},
 }));
 
+
+//passport config
+const passportInit = require('./app/config/passport')
+passportInit(passport);
+app.use(passport.initialize())
+app.use(passport.session())
+
+
 app.use(flash())
 
 //global middleware
 app.use((req,res,next)=>{
     res.locals.session = req.session
+    res.locals.user = req.user
     next()
 })
 
