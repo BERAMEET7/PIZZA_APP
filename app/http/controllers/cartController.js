@@ -12,7 +12,7 @@ function cartController() {
                 };
             }
             let cart = req.session.cart;
-            console.log(req.body);
+            
             const price = parseFloat(req.body.price);
            
 
@@ -29,7 +29,7 @@ function cartController() {
                 cart.totalPrice +=  price;
             }
 
-            res.json({ message: 'Cart updated successfully', cart });
+            return res.json({ message: 'Cart updated successfully', cart });
         }
     };
 }
