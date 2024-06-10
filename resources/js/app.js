@@ -1,81 +1,222 @@
-let addToCart = document.querySelectorAll('.add-to-cart');
-let cartCounter =document.getElementById('cartCounter');
-import { initAdmin } from './admin'
+import moment from 'moment';
+import { Notyf } from 'notyf';
 
-import { Notyf } from "notyf";
-
+// Initialize Notyf
 const notyf = new Notyf({
     duration: 1000,
     position: {
-      x: 'right',
-      y: 'top',
+        x: 'right',
+        y: 'top',
     },
     types: [
-      {
-        type: 'warning',
-        background: 'orange',
-        icon: {
-          className: 'material-icons',
-          tagName: 'i',
-          text: 'warning'
-        }
-      },
-      {
-        type: 'error',
-        background: 'indianred',
-        duration: 2000,
-        dismissible: true
-      }
-    ]
-  });
+        {
+            type: 'warning',
+            background: 'orange',
+            icon: {
+                className: 'material-icons',
+                tagName: 'i',
+                text: 'warning',
+            },
+        },
+        {
+            type: 'error',
+            background: 'indianred',
+            duration: 2000,
+            dismissible: true,
+        },
+    ],
+});
 
-// function updateCart(pizza){
-//     axios.post('/update-cart',pizza).then(res =>{
-//         console.log(res);
-//     })
-// }
+// Update Cart Function
 function updateCart(pizza) {
     fetch('/update-cart', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify(pizza)
+        body: JSON.stringify(pizza),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+            let count = data.cart.totalQty;
+            cartCounter.innerHTML = count;
+            notyf.success('Item added to cart!');
+        })
+        .catch((error) => {
+            console.error('There was a problem with the fetch operation:', error);
+            notyf.error('Failed to add item to cart!');
+        });
+}
+
+// Event listeners for Add to Cart buttons
+document.addEventListener('DOMContentLoaded', () => {
+    let addToCart = document.querySelectorAll('.add-to-cart');
+    let cartCounter = document.getElementById('cartCounter');
+    const alertMsg = document.querySelector('#success-alert');
+    const orderTableBody = document.querySelector('#orderTableBody');
+    let socket = io();
+
+    addToCart.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            let pizza = JSON.parse(btn.dataset.pizza);
+            updateCart(pizza);
+        });
+    });
+
+    if (alertMsg) {
+        setTimeout(() => {
+            alertMsg.remove();
+        }, 2000);
+    }
+
+    if (orderTableBody) {
+        console.log(orderTableBody);
+        initAdmin(socket);
+    }
+
+    // Change order status
+    let statuses = document.querySelectorAll('.status_line');
+    let hiddenInput = document.querySelector('#hiddenInput');
+    let orderData = hiddenInput ? hiddenInput.value : null;
+    if (orderData) {
+        orderData = JSON.parse(orderData);
+    }
+    let time = document.createElement('small');
+
+    function updateStatus(order) {
+        statuses.forEach((status) => {
+            status.classList.remove('step-completed');
+            status.classList.remove('current');
+        });
+        let stepCompleted = true;
+        statuses.forEach((status) => {
+            let dataProp = status.dataset.status;
+            if (stepCompleted) {
+                status.classList.add('step-completed');
+            }
+            if (dataProp === order.status) {
+                stepCompleted = false;
+                time.innerText = moment(order.updatedAt).format('hh:mm A');
+                status.appendChild(time);
+                if (status.nextElementSibling) {
+                    status.nextElementSibling.classList.add('current');
+                }
+            }
+        });
+    }
+
+    updateStatus(orderData);
+
+    if (orderData) {
+        socket.emit('join', `order_${orderData._id}`);
+    }
+
+    let adminAreaPath = window.location.pathname;
+    if (adminAreaPath.includes('admin')) {
+        initAdmin(socket);
+        socket.emit('join', 'adminRoom');
+    }
+
+    socket.on('orderUpdated', (data) => {
+        const updateOrder = { ...orderData };
+        updateOrder.updatedAt = moment().format();
+        updateOrder.status = data.status;
+        notyf.success(`Order ${updateOrder.status} !`);
+        updateStatus(updateOrder);
+    });
+});
+
+// Separate file: admin.js
+
+export function initAdmin(Socket) {
+    const orderTableBody = document.querySelector('#orderTableBody');
+    if (!orderTableBody) {
+        console.log('order table body not found');
+        return;
+    }
+
+    let orders = [];
+    let markup;
+
+    fetch('/admin/orders', {
+        method: 'GET',
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
+            throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
-        console.log(data);
-       let count = data.cart.totalQty;
-       cartCounter.innerHTML=count;
-       notyf.success('Item added to cart!'); 
+        orders = data;
+        markup = generateMarkup(orders);
+        orderTableBody.innerHTML = markup;
     })
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
-        notyf.error('Failed to add item to cart!');
+        alert('Failed to load orders. Please try again later.');
     });
+
+    function renderItems(items) {
+        let parsedItems = Object.values(items);
+        return parsedItems.map((menuItem) => {
+            return `
+                <p>${menuItem.item.name} - ${menuItem.qty} pcs </p>
+            `;
+        }).join('');
+    }
+
+    function generateMarkup(orders) {
+       
+        return orders.map(order => {
+            return `
+                <tr>
+                <td class="border px-4 py-2 text-green-900">
+                    <p>${order._id}</p>
+                    <div>${renderItems(order.items)}</div>
+                </td>
+                <td class="border px-4 py-2">${order.customerId.name}</td>
+                <td class="border px-4 py-2">${order.address}</td>
+                <td class="border px-4 py-2">
+                    <div class="inline-block relative w-64">
+                        <form action="/admin/orders/status" method="POST">
+                            <input type="hidden" name="orderId" value="${order._id}">
+                            <select name="status" onchange="this.form.submit()"
+                                class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="order_placed" ${order.status === 'order_placed' ? 'selected' : ''}>Placed</option>
+                                <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                                <option value="prepared" ${order.status === 'prepared' ? 'selected' : ''}>Prepared</option>
+                                <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </form>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </td>
+                <td class="border px-4 py-2">${moment(order.createdAt).format('hh:mm A')}</td>
+                <td class="border px-4 py-2">${order.paymentStatus ? 'Paid' : 'Not paid'}</td>
+                </tr>
+            `;
+        } ,Socket.on('orderPlaced',(order)=>{
+            notyf.success(`New Order!`);
+            orders.unshift(order);
+            orderTableBody.innerHTML = '';
+            orderTableBody.innerHTML = generateMarkup(orders)
+        }) ).join('');
+       
+    }
+    
 }
-
-
-
-addToCart.forEach((btn) => {
-    btn.addEventListener('click' , (e)=>{
-        let pizza =JSON.parse(btn.dataset.pizza)
-        updateCart(pizza);
-    })
-});
-
-// Remove alert message after X seconds
-const alertMsg = document.querySelector('#success-alert')
-if(alertMsg) {
-    setTimeout(() => {
-        alertMsg.remove()
-    }, 2000)
-}
-
-
-initAdmin();
