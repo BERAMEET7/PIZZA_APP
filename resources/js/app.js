@@ -216,7 +216,6 @@ export function initAdmin(Socket) {
             orderTableBody.innerHTML = '';
             orderTableBody.innerHTML = generateMarkup(orders)
         }) ).join('');
-       
     }
     
 }

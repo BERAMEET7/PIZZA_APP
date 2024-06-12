@@ -27,13 +27,13 @@ main().then(() => {
     .catch(err => console.log(err));
 
 async function main() {
-    await mongoose.connect('mongodb://127.0.0.1:27017/pizza');
+    await mongoose.connect(process.env.MONGO_CONNECTION_URL);
 }
 
 //session store
 
 const mongoStore = new MongoDBStore({
-    mongoUrl: 'mongodb://127.0.0.1:27017/pizza',
+    mongoUrl: process.env.MONGO_CONNECTION_URL,
     collection: 'sessions'
 });
 
@@ -78,6 +78,12 @@ app.set('views', path.join(__dirname, '/resources/views'));
 
 //Routers
 require('./routes/web')(app)
+app.use((req,res)=>{
+    res.status(404).render('errors/404')
+})
+
+
+
 
 const server = app.listen(PORT, () => {
     console.log("listining at port", PORT);
