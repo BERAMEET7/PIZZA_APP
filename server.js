@@ -76,6 +76,7 @@ app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/resources/views'));
 
+
 //Routers
 require('./routes/web')(app)
 app.use((req,res)=>{
