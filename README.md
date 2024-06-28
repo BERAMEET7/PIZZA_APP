@@ -1,4 +1,4 @@
-# Realtime Pizza Order Tracker App
+# Realtime Pizza Order Tracker App(BERA's PIZZA)
 
 ## Overview
 
@@ -66,12 +66,8 @@ Follow these steps to set up the project on your local machine:
   - You will be redirected to the order tracking page.
 
 - **Tracking an Order**:
-  - The order tracking page will display the current status of your order with animations.
+  - The order tracking page will display the current status of your order.
   - The status will automatically update as your order progresses through different stages.
-
-## Animations
-
-The app uses a combination of CSS animations and JavaScript libraries like Animate.css and Lottie to provide engaging visual feedback for each order status. 
 
 ## Contributing
 
@@ -91,10 +87,6 @@ Contributions are welcome! Please follow these steps to contribute:
     git push origin feature/your-feature-name
     ```
 5. **Create a pull request**.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
